@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply font-sans text-slate-900 antialiased;
+}
+
+.hero-mesh {
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 20%, rgb(167 243 208 / 0.7), transparent 55%),
+    radial-gradient(ellipse 60% 45% at 85% 15%, rgb(153 246 228 / 0.5), transparent 50%),
+    radial-gradient(ellipse 70% 40% at 50% 60%, rgb(186 230 253 / 0.35), transparent 55%),
+    linear-gradient(180deg, #ecfdf5 0%, #f0fdfa 35%, #f8fafc 100%);
+}
+
+@keyframes hero-flow {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -44;
+  }
+}
+
+.hero-flow-line {
+  animation: hero-flow 24s linear infinite;
+}
+
+.hero-flow-line-delay {
+  animation-duration: 32s;
+  animation-direction: reverse;
+}

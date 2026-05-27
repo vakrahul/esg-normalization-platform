@@ -1,0 +1,5 @@
+FiscalYear,AccountingPeriod,Accounting_Company,Accounting_CostCenter,Currency,TransactionDate,TransactionType,DocumentNumber,Requester,LineText,OriginatingSystem,TransactionAmount
+2026,Q2,ACME_EUROPE,CC100,EUR,2026-04-03,Fuel Purchase,PR201,Helena Koch,Diesel Fleet,SAP Ariba,8400
+2026,Q2,ACME_EUROPE,CC200,EUR,2026-04-08,Procurement,PR202,Marco Silva,IT Hardware,SAP Ariba,3200
+2026,Q2,ACME_EUROPE,CC300,EUR,2026-04-15,Procurement,PR203,Anya Petrova,Packaging Supplies,SAP Ariba,1100
+2026,Q2,ACME_EUROPE,UNK009,EUR,2026/04/20,Fuel Purchase,PR204,Marco Silva,Heating Oil,SAP Ariba,2200

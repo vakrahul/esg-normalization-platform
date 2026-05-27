@@ -1,0 +1,4 @@
+FiscalYear,AccountingPeriod,Accounting_Company,Accounting_CostCenter,Currency,TransactionDate,TransactionType,DocumentNumber,Requester,LineText,OriginatingSystem,TransactionAmount
+2026,Q1,ACME_INDIA,CC100,USD,2026-01-12,Fuel Purchase,PR37,Arnold Davis,Diesel Fuel,SAP Ariba,12000
+2026,Q1,ACME_INDIA,CC200,USD,2026-01-14,Procurement,PR38,Sarah Lee,Office Chairs,SAP Ariba,2500
+2026,Q1,ACME_INDIA,UNK001,,2026/01/18,Fuel Purchase,PR39,John Doe,Industrial Gasoline,SAP Ariba,-500

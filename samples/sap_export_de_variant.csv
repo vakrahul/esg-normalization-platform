@@ -1,0 +1,4 @@
+Geschäftsjahr,Buchungsperiode,Buchungskreis,Kostenstelle,Währung,Buchungsdatum,Belegart,Belegnummer,Anforderer,Positionstext,Herkunftssystem,Betrag
+2026,Q1,ACME_EU,CC310,EUR,2026-02-01,Kraftstoff,DE-9001,Max Müller,Diesel Tankstelle,SAP Ariba,8400
+2026,Q1,ACME_EU,CC320,EUR,2026-02-03,Beschaffung,DE-9002,Anna Schmidt,Büromaterial,SAP Ariba,1200
+2026,Q1,ACME_EU,UNK099,,2026.02.05,Kraftstoff,DE-9003,Lea Weber,Heizöl,SAP Ariba,2100

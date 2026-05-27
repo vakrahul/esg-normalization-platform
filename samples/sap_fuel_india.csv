@@ -1,0 +1,5 @@
+FiscalYear,AccountingPeriod,Accounting_Company,Accounting_CostCenter,Currency,TransactionDate,TransactionType,DocumentNumber,Requester,LineText,OriginatingSystem,TransactionAmount
+2026,Q1,ACME_INDIA,CC100,INR,2026-02-01,Fuel Purchase,PR101,Ravi Kumar,Generator Diesel,SAP Ariba,450000
+2026,Q1,ACME_INDIA,CC200,INR,2026-02-05,Procurement,PR102,Priya Shah,Warehouse Equipment,SAP Ariba,89000
+2026,Q1,ACME_INDIA,CC100,INR,2026-02-18,Fuel Purchase,PR103,Ravi Kumar,LPG Cylinders,SAP Ariba,32000
+2026,Q1,ACME_INDIA,CC100,,2026-02-22,Fuel Purchase,PR104,Arjun Mehta,Petrol,SAP Ariba,15000

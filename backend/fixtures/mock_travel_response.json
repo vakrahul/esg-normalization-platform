@@ -1,0 +1,31 @@
+[
+  {
+    "trip_id": "TRIP1001",
+    "booking_type": "air",
+    "employee_id": "EMP001",
+    "start_city_code": "HYD",
+    "end_city_code": "DXB",
+    "cabin": "Economy",
+    "vendor": "Emirates",
+    "start_date_utc": "2026-01-12T10:00:00Z",
+    "end_date_utc": "2026-01-12T13:30:00Z",
+    "carbon_emission_lbs": null
+  },
+  {
+    "trip_id": "TRIP1002",
+    "booking_type": "hotel",
+    "employee_id": "EMP002",
+    "vendor_name": "Marriott",
+    "start_date_local": "2026-02-10",
+    "end_date_local": "2026-02-13",
+    "total_rate": 300
+  },
+  {
+    "trip_id": "TRIP1003",
+    "booking_type": "ride",
+    "employee_id": "EMP003",
+    "vendor_name": "Uber",
+    "miles": null,
+    "duration": 45
+  }
+]

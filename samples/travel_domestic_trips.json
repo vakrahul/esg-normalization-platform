@@ -1,0 +1,31 @@
+[
+  {
+    "trip_id": "TRIP2001",
+    "booking_type": "air",
+    "employee_id": "EMP101",
+    "start_city_code": "DEL",
+    "end_city_code": "BOM",
+    "cabin": "Economy",
+    "vendor": "IndiGo",
+    "start_date_utc": "2026-03-05T06:00:00Z",
+    "end_date_utc": "2026-03-05T08:30:00Z",
+    "carbon_emission_lbs": 180
+  },
+  {
+    "trip_id": "TRIP2002",
+    "booking_type": "hotel",
+    "employee_id": "EMP102",
+    "vendor_name": "Taj Hotels",
+    "start_date_local": "2026-03-05",
+    "end_date_local": "2026-03-07",
+    "total_rate": 420
+  },
+  {
+    "trip_id": "TRIP2003",
+    "booking_type": "ride",
+    "employee_id": "EMP103",
+    "vendor_name": "Ola",
+    "miles": 22,
+    "duration": 55
+  }
+]

@@ -1,0 +1,4 @@
+account_number,meter_id,service_type,billing_start,billing_end,usage,units,cost,notes
+ACC1001,MTR001,electricity,2026-01-14,2026-02-13,14500,kWh,2400,
+ACC1002,MTR002,electricity,2026-02-01,2026-03-01,999999,kWh,12000,Estimated bill
+ACC1003,MTR003,electricity,2026-02-10,2026-03-09,,kWh,500,Missing AMI read

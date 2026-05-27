@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.sqlite3
+backend/staticfiles/
+.env
+.venv/
+venv/
+
+# Node
+node_modules/
+frontend/dist/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local notes only (optional — do not add DEMO_SCRIPT, USAGE, SUBMISSION, MODEL, etc.)
+doc.txt
+*.local.md
+.DEMO_SCRIPT.md
+.USAGE.md
+.SUBMISSION.md

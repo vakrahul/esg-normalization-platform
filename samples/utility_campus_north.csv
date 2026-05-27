@@ -1,0 +1,4 @@
+account_number,meter_id,service_type,billing_start,billing_end,usage,units,cost,notes
+ACC2001,MTR101,electricity,2026-03-01,2026-03-31,18200,kWh,3100,
+ACC2002,MTR102,electricity,2026-03-01,2026-03-31,42000,kWh,6800,Estimated bill
+ACC2003,MTR103,electricity,2026-04-01,2026-04-30,9500,kWh,1600,
