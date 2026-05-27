@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import AppShell from "./components/AppShell";
-import { authApi, ensureCsrf } from "./api/client";
+import { authApi, getAuthToken } from "./api/client";
 import ActivityDetail from "./pages/ActivityDetail";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
@@ -14,7 +14,7 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
   const { data: user, isLoading, isError } = useQuery({
     queryKey: ["me"],
     queryFn: async () => {
-      await ensureCsrf();
+      if (!getAuthToken()) throw new Error("Not authenticated");
       return authApi.me();
     },
     retry: false,
@@ -37,8 +37,8 @@ export default function App() {
   const { data: user } = useQuery({
     queryKey: ["me"],
     queryFn: async () => {
+      if (!getAuthToken()) return null;
       try {
-        await ensureCsrf();
         return await authApi.me();
       } catch {
         return null;

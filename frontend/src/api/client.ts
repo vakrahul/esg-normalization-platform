@@ -1,7 +1,17 @@
 const API_BASE = import.meta.env.VITE_API_URL || "/api";
+const AUTH_TOKEN_KEY = "breathe_esg_token";
 
-/** CSRF from /auth/csrf/ body (works across Render subdomains; cookie alone does not). */
+/** CSRF fallback for local session dev; production uses Token auth in localStorage. */
 let csrfToken: string | null = null;
+
+export function getAuthToken(): string | null {
+  return localStorage.getItem(AUTH_TOKEN_KEY);
+}
+
+export function setAuthToken(token: string | null) {
+  if (token) localStorage.setItem(AUTH_TOKEN_KEY, token);
+  else localStorage.removeItem(AUTH_TOKEN_KEY);
+}
 
 function getCookie(name: string): string | null {
   const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
@@ -16,9 +26,14 @@ export async function apiFetch<T>(
   if (!(options.body instanceof FormData)) {
     headers.set("Content-Type", "application/json");
   }
-  const csrf = csrfToken || getCookie("csrftoken");
-  if (csrf && options.method && options.method !== "GET") {
-    headers.set("X-CSRFToken", csrf);
+  const token = getAuthToken();
+  if (token) {
+    headers.set("Authorization", `Token ${token}`);
+  } else {
+    const csrf = csrfToken || getCookie("csrftoken");
+    if (csrf && options.method && options.method !== "GET") {
+      headers.set("X-CSRFToken", csrf);
+    }
   }
   const res = await fetch(`${API_BASE}${path}`, {
     ...options,
@@ -26,6 +41,9 @@ export async function apiFetch<T>(
     credentials: "include",
   });
   if (!res.ok) {
+    if (res.status === 401 && getAuthToken()) {
+      setAuthToken(null);
+    }
     const err = await res.json().catch(() => ({ detail: res.statusText }));
     throw new Error(err.detail || JSON.stringify(err));
   }
@@ -34,17 +52,30 @@ export async function apiFetch<T>(
 }
 
 export async function ensureCsrf() {
+  if (getAuthToken()) return;
   const data = await apiFetch<{ csrfToken: string }>("/auth/csrf/");
   csrfToken = data.csrfToken;
 }
 
 export const authApi = {
-  login: (username: string, password: string) =>
-    apiFetch<{ username: string; id: number }>("/auth/login/", {
-      method: "POST",
-      body: JSON.stringify({ username, password }),
-    }),
-  logout: () => apiFetch("/auth/logout/", { method: "POST" }),
+  login: async (username: string, password: string) => {
+    const data = await apiFetch<{ username: string; id: number; token: string }>(
+      "/auth/login/",
+      {
+        method: "POST",
+        body: JSON.stringify({ username, password }),
+      }
+    );
+    setAuthToken(data.token);
+    return data;
+  },
+  logout: async () => {
+    try {
+      await apiFetch("/auth/logout/", { method: "POST" });
+    } finally {
+      setAuthToken(null);
+    }
+  },
   me: () => apiFetch<{ username: string; id: number }>("/auth/me/"),
 };
 

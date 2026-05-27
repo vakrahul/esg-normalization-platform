@@ -2,6 +2,7 @@ import os
 
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
+from rest_framework.authtoken.models import Token
 
 from apps.core.models import DataSource
 from apps.core.services import get_default_organization
@@ -39,5 +40,6 @@ class Command(BaseCommand):
         user.set_password(options["password"])
         user.is_staff = True
         user.save()
+        Token.objects.get_or_create(user=user)
         action = "Created" if created else "Updated"
         self.stdout.write(self.style.SUCCESS(f"{action} user '{user.username}'"))

@@ -1,7 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { authApi, ensureCsrf } from "../api/client";
+import { authApi } from "../api/client";
 import PillButton from "../components/PillButton";
 
 export default function Login() {
@@ -15,12 +15,18 @@ export default function Login() {
     e.preventDefault();
     setError("");
     try {
-      await ensureCsrf();
       await authApi.login(username, password);
       await qc.invalidateQueries({ queryKey: ["me"] });
       navigate("/upload");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      const msg = err instanceof Error ? err.message : "Login failed";
+      if (msg === "Failed to fetch") {
+        setError(
+          "Cannot reach the API. On Render: set VITE_API_URL to your backend URL + /api, then redeploy the static site. Also confirm the API health URL loads in your browser."
+        );
+      } else {
+        setError(msg);
+      }
     }
   };
 
