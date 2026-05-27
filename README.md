@@ -149,18 +149,36 @@ Open http://localhost:5173
 
 ## Deploy to Render
 
-1. Push this repo to GitHub.
-2. Render → **New → Blueprint** → select `render.yaml`.
-3. Once the API service is live, set environment variables on each service:
+### 1. Backend (Web Service, root `backend`)
 
-| Service | Variable | Value |
-|---------|----------|-------|
-| Static site | `VITE_API_URL` | `https://YOUR-API.onrender.com/api` |
-| API | `CORS_ALLOWED_ORIGINS` | `https://YOUR-WEB.onrender.com` |
-| API | `CSRF_TRUSTED_ORIGINS` | `https://YOUR-WEB.onrender.com` |
+| Variable | Example value |
+|----------|----------------|
+| `USE_SQLITE` | `true` |
+| `DJANGO_DEBUG` | `false` |
+| `DJANGO_SECRET_KEY` | (generate) |
+| `DJANGO_ALLOWED_HOSTS` | `.onrender.com` |
+| `COOKIE_DOMAIN` | `.onrender.com` |
+| `CORS_ALLOWED_ORIGINS` | `https://YOUR-FRONTEND.onrender.com` (no trailing `/`) |
+| `CSRF_TRUSTED_ORIGINS` | `https://YOUR-FRONTEND.onrender.com` (no trailing `/`) |
 
-4. Redeploy both services.
-5. Verify: `https://YOUR-API.onrender.com/api/health/` → `{"status":"ok"}`.
+Test: `https://YOUR-API.onrender.com/api/health/` → `{"status":"ok"}`
+
+### 2. Frontend (Static Site, root `frontend`)
+
+| Variable | Example value |
+|----------|----------------|
+| `VITE_API_URL` | `https://YOUR-API.onrender.com/api` |
+
+**Important:** Vite bakes `VITE_API_URL` at **build time**. After changing it, use **Manual Deploy → Clear build cache & deploy** on the static site.
+
+### Your URLs (example)
+
+| | URL |
+|---|-----|
+| API | `https://esg-normalization-platform.onrender.com/api` |
+| Frontend | `https://esg-normalization-platform-1.onrender.com` |
+
+If login shows **Failed to fetch**, the static site was built without `VITE_API_URL` or the API is down — fix env vars and redeploy the frontend.
 
 ---
 
