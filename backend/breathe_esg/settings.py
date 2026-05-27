@@ -9,9 +9,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-only-change-in-production")
 DEBUG = os.getenv("DJANGO_DEBUG", "true").lower() == "true"
+def _env(name: str, default: str = "") -> str:
+    return os.getenv(name, default).strip()
+
+
 ALLOWED_HOSTS = [
     h.strip()
-    for h in os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,backend").split(",")
+    for h in _env("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,backend").split(",")
     if h.strip()
 ]
 
@@ -111,7 +115,7 @@ else:
 
 
 def _parse_origin_list(env_name: str, default: str) -> list[str]:
-    raw = os.getenv(env_name, default)
+    raw = _env(env_name, default)
     origins = []
     for part in raw.split(","):
         o = part.strip().rstrip("/")
@@ -127,7 +131,7 @@ if not DEBUG:
     CSRF_COOKIE_SAMESITE = "None"
     # Needed when frontend and API are on different subdomains (e.g. Render).
     # Allows the frontend to read `csrftoken` and send `X-CSRFToken`.
-    cookie_domain = os.getenv("COOKIE_DOMAIN")
+    cookie_domain = _env("COOKIE_DOMAIN")
     if cookie_domain:
         SESSION_COOKIE_DOMAIN = cookie_domain
         CSRF_COOKIE_DOMAIN = cookie_domain
