@@ -4,25 +4,6 @@ import { importsApi, ImportBatch } from "../api/client";
 import BatchDetailModal from "../components/BatchDetailModal";
 import PillButton from "../components/PillButton";
 
-const SAMPLE_FILES = {
-  sap: [
-    "sap_budget_export.csv",
-    "sap_procurement_q2.csv",
-    "sap_fuel_india.csv",
-    "sap_export_de_variant.csv (German headers)",
-  ],
-  utility: [
-    "utility_billing.csv",
-    "utility_campus_north.csv",
-    "utility_campus_south.csv",
-  ],
-  travel: [
-    "travel_domestic_trips.json (sync: domestic)",
-    "travel_international_trips.json (sync: international)",
-    "Any Concur-style JSON array (file upload)",
-  ],
-};
-
 function BatchTable({
   batches,
   onSelect,
@@ -135,18 +116,16 @@ export default function Upload() {
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
         <div className="rounded-xl border border-emerald-100 bg-white/90 p-4 shadow-sm">
           <h3 className="text-sm font-medium text-brand-950">SAP CSV</h3>
-          <p className="mt-1 text-[11px] text-slate-500">Same headers as sample files in /samples</p>
+          <p className="mt-1 text-[11px] text-slate-500">
+            Any SAP-style CSV export. For examples, see the <span className="font-medium">/samples</span>{" "}
+            folder in the repo.
+          </p>
           <input
             type="file"
             accept=".csv"
             className="mt-3 block w-full text-xs"
             onChange={(e) => e.target.files?.[0] && sapMut.mutate(e.target.files[0])}
           />
-          <ul className="mt-2 list-inside list-disc text-[10px] text-slate-500">
-            {SAMPLE_FILES.sap.map((f) => (
-              <li key={f}>{f}</li>
-            ))}
-          </ul>
         </div>
 
         <div className="rounded-xl border border-emerald-100 bg-white/90 p-4 shadow-sm">
@@ -158,11 +137,6 @@ export default function Upload() {
             className="mt-3 block w-full text-xs"
             onChange={(e) => e.target.files?.[0] && utilMut.mutate(e.target.files[0])}
           />
-          <ul className="mt-2 list-inside list-disc text-[10px] text-slate-500">
-            {SAMPLE_FILES.utility.map((f) => (
-              <li key={f}>{f}</li>
-            ))}
-          </ul>
         </div>
 
         <div className="rounded-xl border border-emerald-100 bg-white/90 p-4 shadow-sm">
@@ -199,11 +173,9 @@ export default function Upload() {
               Sync intl
             </PillButton>
           </div>
-          <ul className="mt-2 list-inside list-disc text-[10px] text-slate-500">
-            {SAMPLE_FILES.travel.map((f) => (
-              <li key={f}>{f}</li>
-            ))}
-          </ul>
+          <p className="mt-2 text-[10px] text-slate-500">
+            Use Sync buttons for built-in datasets, or upload any Concur-style itinerary JSON array.
+          </p>
         </div>
       </div>
 
