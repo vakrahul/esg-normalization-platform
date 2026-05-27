@@ -1,5 +1,8 @@
 const API_BASE = import.meta.env.VITE_API_URL || "/api";
 
+/** CSRF from /auth/csrf/ body (works across Render subdomains; cookie alone does not). */
+let csrfToken: string | null = null;
+
 function getCookie(name: string): string | null {
   const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
   return match ? decodeURIComponent(match[2]) : null;
@@ -13,7 +16,7 @@ export async function apiFetch<T>(
   if (!(options.body instanceof FormData)) {
     headers.set("Content-Type", "application/json");
   }
-  const csrf = getCookie("csrftoken");
+  const csrf = csrfToken || getCookie("csrftoken");
   if (csrf && options.method && options.method !== "GET") {
     headers.set("X-CSRFToken", csrf);
   }
@@ -31,7 +34,8 @@ export async function apiFetch<T>(
 }
 
 export async function ensureCsrf() {
-  await apiFetch<{ csrfToken: string }>("/auth/csrf/");
+  const data = await apiFetch<{ csrfToken: string }>("/auth/csrf/");
+  csrfToken = data.csrfToken;
 }
 
 export const authApi = {
