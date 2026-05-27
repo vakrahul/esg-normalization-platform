@@ -32,8 +32,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -78,23 +78,34 @@ DATABASES = {
     }
 }
 
-if os.getenv("USE_SQLITE", "").lower() == "true":
+_use_sqlite = os.getenv("USE_SQLITE", "").lower() == "true"
+if _use_sqlite:
     DATABASES["default"] = {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
+else:
+    _database_url = os.getenv("DATABASE_URL")
+    if _database_url:
+        try:
+            import dj_database_url
 
-_database_url = os.getenv("DATABASE_URL")
-if _database_url:
-    try:
-        import dj_database_url
+            DATABASES["default"] = dj_database_url.parse(_database_url, conn_max_age=600)
+        except ImportError as exc:
+            raise ImportError(
+                "DATABASE_URL is set but dj-database-url is not installed. "
+                "Run: pip install -r requirements.txt"
+            ) from exc
 
-        DATABASES["default"] = dj_database_url.parse(_database_url, conn_max_age=600)
-    except ImportError as exc:
-        raise ImportError(
-            "DATABASE_URL is set but dj-database-url is not installed. "
-            "Run: pip install -r requirements.txt"
-        ) from exc
+
+def _parse_origin_list(env_name: str, default: str) -> list[str]:
+    raw = os.getenv(env_name, default)
+    origins = []
+    for part in raw.split(","):
+        o = part.strip().rstrip("/")
+        if o:
+            origins.append(o)
+    return origins
 
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
@@ -125,23 +136,21 @@ STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-CORS_ALLOWED_ORIGINS = [
-    o.strip()
-    for o in os.getenv(
-        "CORS_ALLOWED_ORIGINS",
-        "http://localhost:5173,http://127.0.0.1:5173",
-    ).split(",")
-    if o.strip()
-]
+CORS_ALLOWED_ORIGINS = _parse_origin_list(
+    "CORS_ALLOWED_ORIGINS",
+    "http://localhost:5173,http://127.0.0.1:5173",
+)
 CORS_ALLOW_CREDENTIALS = True
-CSRF_TRUSTED_ORIGINS = [
-    o.strip()
-    for o in os.getenv(
-        "CSRF_TRUSTED_ORIGINS",
-        "http://localhost:5173,http://127.0.0.1:5173",
-    ).split(",")
-    if o.strip()
-]
+CSRF_TRUSTED_ORIGINS = _parse_origin_list(
+    "CSRF_TRUSTED_ORIGINS",
+    "http://localhost:5173,http://127.0.0.1:5173",
+)
+
+# Render: allow any *.onrender.com frontend (avoids CORS typos / trailing slashes)
+if os.getenv("RENDER"):
+    CORS_ALLOWED_ORIGIN_REGEXES = [
+        r"^https://[a-zA-Z0-9-]+\.onrender\.com$",
+    ]
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
