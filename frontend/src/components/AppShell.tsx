@@ -1,6 +1,8 @@
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import PillButton from "./PillButton";
 import { authApi } from "../api/client";
+import { useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 
 interface Props {
   user?: { username: string } | null;
@@ -10,17 +12,21 @@ export default function AppShell({ user }: Props) {
   const navigate = useNavigate();
   const location = useLocation();
   const isLanding = location.pathname === "/";
+  const qc = useQueryClient();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const logout = async () => {
     await authApi.logout();
-    navigate("/login");
+    qc.invalidateQueries({ queryKey: ["me"] });
+    setMenuOpen(false);
+    navigate("/");
   };
 
   if (isLanding) {
     return (
       <div className="min-h-screen">
         <header className="absolute inset-x-0 top-0 z-30">
-          <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5 md:px-8 md:py-6">
+          <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 md:px-8 md:py-6">
             <Link
               to="/"
               className="rounded-2xl border border-white/60 bg-white/80 px-5 py-2.5 text-base font-semibold tracking-tight text-slate-900 shadow-sm backdrop-blur-md transition hover:bg-white/95"
@@ -42,7 +48,7 @@ export default function AppShell({ user }: Props) {
               </div>
             ) : (
               <Link to="/login">
-                <PillButton className="!bg-emerald-900 !px-6 !shadow-md hover:!bg-emerald-800">
+                <PillButton className="!bg-emerald-900 !px-5 !shadow-md hover:!bg-emerald-800">
                   Sign in
                 </PillButton>
               </Link>
@@ -64,14 +70,45 @@ export default function AppShell({ user }: Props) {
             Breathe ESG
           </Link>
           {user && (
-            <nav className="hidden gap-6 text-xs font-medium uppercase tracking-widest text-slate-600 md:flex">
-              <Link to="/upload" className="hover:text-brand-800">
-                Upload
-              </Link>
-              <Link to="/review" className="hover:text-brand-800">
-                Review
-              </Link>
-            </nav>
+            <>
+              <nav className="hidden gap-6 text-xs font-medium uppercase tracking-widest text-slate-600 md:flex">
+                <Link to="/upload" className="hover:text-brand-800">
+                  Upload
+                </Link>
+                <Link to="/review" className="hover:text-brand-800">
+                  Review
+                </Link>
+              </nav>
+
+              {/* Mobile nav: simple dropdown */}
+              <div className="relative md:hidden">
+                <button
+                  type="button"
+                  className="rounded-full border border-white/70 bg-white/80 px-4 py-2 text-xs font-medium uppercase tracking-widest text-slate-600 shadow-sm backdrop-blur-md transition hover:bg-white/95"
+                  onClick={() => setMenuOpen((v) => !v)}
+                >
+                  Menu
+                </button>
+                {menuOpen && (
+                  <div className="absolute right-0 mt-2 w-40 overflow-hidden rounded-2xl border border-emerald-100 bg-white/95 shadow-lg backdrop-blur-md">
+                    <Link
+                      to="/upload"
+                      className="block px-4 py-3 text-sm text-slate-800 hover:bg-emerald-50/60"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Upload
+                    </Link>
+                    <Link
+                      to="/review"
+                      className="block px-4 py-3 text-sm text-slate-800 hover:bg-emerald-50/60"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      Review
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </>
           )}
         </div>
         {user ? (

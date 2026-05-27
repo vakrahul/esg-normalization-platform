@@ -1,0 +1,5 @@
+account_number,meter_id,service_type,billing_start,billing_end,usage,units,cost,notes
+ACC2101,MTRA-01,electricity,2026-06-01,2026-06-30,32800,kWh,5250,
+ACC2101,MTRA-01,electricity,2026-07-01,2026-07-31,34150,kWh,5485,Estimated read from portal
+ACC2102,MTRA-02,electricity,2026-06-15,2026-07-14,0,kWh,0,Meter maintenance outage
+ACC2103,MTRA-03,electricity,2026-07-01,2026-07-31,999999,kWh,190000,Suspicious spike

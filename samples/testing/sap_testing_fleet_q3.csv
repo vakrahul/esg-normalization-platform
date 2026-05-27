@@ -1,0 +1,5 @@
+FiscalYear,AccountingPeriod,Accounting_Company,Accounting_CostCenter,Currency,TransactionDate,TransactionType,DocumentNumber,Requester,LineText,OriginatingSystem,TransactionAmount
+2026,Q3,ACME_INDIA,CC100,USD,2026-07-03,Fuel Purchase,FLEET-3001,Arjun Rao,Diesel Bulk Refill,SAP Ariba,18350
+2026,Q3,ACME_INDIA,CC120,USD,2026-07-08,Fuel Purchase,FLEET-3002,Priya Shah,Petrol Card Settlement,SAP Ariba,6420
+2026,Q3,ACME_INDIA,UNK777,,2026-07-13,Gasoline Purchase,FLEET-3003,Rahul Mehta,Depot Fuel Top-up,SAP Ariba,5100
+2026,Q3,ACME_INDIA,CC140,USD,2026-07-22,Procurement,FLEET-3004,Nisha Kapoor,Safety Cones and PPE,SAP Ariba,2150

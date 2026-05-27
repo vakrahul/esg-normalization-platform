@@ -1,0 +1,42 @@
+[
+  {
+    "trip_id": "TRIP9101",
+    "booking_type": "air",
+    "employee_id": "EMP221",
+    "start_city_code": "BLR",
+    "end_city_code": "SIN",
+    "cabin": "Economy",
+    "vendor": "Singapore Airlines",
+    "start_date_utc": "2026-09-03T02:30:00Z",
+    "end_date_utc": "2026-09-03T08:20:00Z",
+    "carbon_emission_lbs": 520
+  },
+  {
+    "trip_id": "TRIP9102",
+    "booking_type": "hotel",
+    "employee_id": "EMP222",
+    "vendor_name": "Marina Bay Hotel",
+    "start_date_local": "2026-09-03",
+    "end_date_local": "2026-09-06",
+    "total_rate": 690
+  },
+  {
+    "trip_id": "TRIP9103",
+    "booking_type": "ride",
+    "employee_id": "EMP223",
+    "vendor_name": "Grab",
+    "miles": 18,
+    "duration": 42
+  },
+  {
+    "trip_id": "TRIP9104",
+    "booking_type": "air",
+    "employee_id": "EMP224",
+    "start_city_code": "LHR",
+    "end_city_code": "JFK",
+    "cabin": "Premium Economy",
+    "vendor": "British Airways",
+    "start_date_utc": "2026-09-10T10:45:00Z",
+    "end_date_utc": "2026-09-10T18:30:00Z"
+  }
+]

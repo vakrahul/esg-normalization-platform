@@ -1,0 +1,35 @@
+[
+  {
+    "trip_id": "TRIP9201",
+    "booking_type": "ride",
+    "employee_id": "EMP301",
+    "vendor_name": "Uber",
+    "miles": 12,
+    "duration": 31
+  },
+  {
+    "trip_id": "TRIP9202",
+    "booking_type": "ride",
+    "employee_id": "EMP302",
+    "vendor_name": "Ola",
+    "miles": null,
+    "duration": 28
+  },
+  {
+    "trip_id": "TRIP9203",
+    "booking_type": "ride",
+    "employee_id": "EMP303",
+    "vendor_name": "Lyft",
+    "miles": 46,
+    "duration": 79
+  },
+  {
+    "trip_id": "TRIP9204",
+    "booking_type": "hotel",
+    "employee_id": "EMP304",
+    "vendor_name": "Hilton City Center",
+    "start_date_local": "2026-11-11",
+    "end_date_local": "2026-11-13",
+    "total_rate": 390
+  }
+]

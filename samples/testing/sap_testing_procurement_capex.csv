@@ -1,0 +1,5 @@
+FiscalYear,AccountingPeriod,Accounting_Company,Accounting_CostCenter,Currency,TransactionDate,TransactionType,DocumentNumber,Requester,LineText,OriginatingSystem,TransactionAmount
+2026,Q4,ACME_EU,CC300,EUR,2026-10-02,Procurement,CAPEX-4101,Elena Fischer,High-efficiency Boiler Upgrade,SAP S4,48200
+2026,Q4,ACME_EU,CC310,EUR,2026-10-06,Procurement,CAPEX-4102,Marco Rossi,LED Retrofit - Plant 2,SAP S4,12900
+2026,Q4,ACME_EU,CC320,EUR,2026/10/09,Fuel Purchase,CAPEX-4103,Sofia Klein,Biofuel Pilot Batch,SAP S4,7600
+2026,Q4,ACME_EU,UNK901,EUR,2026-10-14,Procurement,CAPEX-4104,Luca Weber,Energy Meter Hardware,SAP S4,-1200
