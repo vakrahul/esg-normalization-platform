@@ -1,8 +1,10 @@
 # Breathe ESG
 
-Prototype for ingesting multi-source sustainability data (SAP, utility, travel), normalizing to a canonical ESG activity model, validating data quality issues, and supporting analyst review before records are locked for audit.
+Prototype for ingesting multi-source sustainability data (SAP, utility, travel), normalising to a canonical ESG activity model, validating data quality issues, and supporting analyst review before records are locked for audit.
 
-Built for the **Breathe ESG tech intern assignment**. The hard problem modeled here is **messy enterprise ingestion and analyst sign-off**, not carbon methodology.
+Built for the **Breathe ESG tech intern assignment**. The hard problem modelled here is **messy enterprise ingestion and analyst sign-off**, not carbon methodology.
+
+---
 
 ## Live demo
 
@@ -13,13 +15,11 @@ Built for the **Breathe ESG tech intern assignment**. The hard problem modeled h
 | Frontend | `https://YOUR-WEB.onrender.com` |
 | API health | `https://YOUR-API.onrender.com/api/health/` |
 
-**Login:** `analyst` / `analyst123` (from `seed_data`)
-
-**3-minute walkthrough:** [DEMO_SCRIPT.md](DEMO_SCRIPT.md)
+**Login:** `analyst` / `analyst123`
 
 ---
 
-## Architecture flow (diagram)
+## Architecture flow
 
 ```mermaid
 flowchart TB
@@ -59,7 +59,7 @@ flowchart TB
 
 ---
 
-## Analyst journey (sequence)
+## Analyst journey
 
 ```mermaid
 sequenceDiagram
@@ -87,45 +87,27 @@ sequenceDiagram
 
 ---
 
-## Presenter script (short)
-
-Read aloud while demoing — full version in [DEMO_SCRIPT.md](DEMO_SCRIPT.md).
-
-| Step | Say | Do |
-|------|-----|-----|
-| 1 | "Three messy enterprise sources, one canonical model." | Show landing + research links |
-| 2 | "Every import is a batch; raw JSON is immutable." | Upload SAP + utility; sync travel |
-| 3 | "Validation flags suspicious rows for humans." | Review → filter flagged |
-| 4 | "Analyst approves, then locks for auditors." | Detail → approve → lock → show audit + raw |
-| 5 | "We documented what we did not build." | Mention TRADEOFFS.md |
-
-**Before recording:** Upload → **Clear demo data**, then upload only `sap_budget_export.csv`, `utility_billing.csv`, and one travel sync.
-
----
-
 ## Assignment deliverables
 
-| Deliverable | File |
-|-------------|------|
-| Data model | [MODEL.md](MODEL.md) |
-| Decisions | [DECISIONS.md](DECISIONS.md) |
-| Tradeoffs (3 cuts) | [TRADEOFFS.md](TRADEOFFS.md) |
-| Research per source | [SOURCES.md](SOURCES.md) |
-| Submit checklist | [SUBMISSION.md](SUBMISSION.md) |
-| Run guide | [USAGE.md](USAGE.md) |
+| Document | Purpose |
+|----------|---------|
+| [MODEL.md](MODEL.md) | Data model, tenancy, lineage, immutability |
+| [DECISIONS.md](DECISIONS.md) | Ambiguities resolved, per-source scope |
+| [TRADEOFFS.md](TRADEOFFS.md) | Three deliberate non-builds |
+| [SOURCES.md](SOURCES.md) | Research per source, sample data rationale |
 
 ---
 
 ## Sample files (`samples/`)
 
-Upload **your own CSV/JSON** if columns match. See [USAGE.md](USAGE.md).
+Upload your own CSV/JSON if column headers match the samples.
 
 | SAP | Utility | Travel |
 |-----|---------|--------|
 | sap_budget_export.csv | utility_billing.csv | Sync: default / domestic / international |
 | sap_procurement_q2.csv | utility_campus_north.csv | travel_domestic_trips.json |
 | sap_fuel_india.csv | utility_campus_south.csv | travel_international_trips.json |
-| **sap_export_de_variant.csv** (German headers) | | |
+| sap_export_de_variant.csv (German headers) | | |
 
 ---
 
@@ -142,7 +124,7 @@ Upload **your own CSV/JSON** if columns match. See [USAGE.md](USAGE.md).
 
 ## Quick start (local)
 
-### Backend
+**Backend**
 
 ```cmd
 cd backend
@@ -153,7 +135,7 @@ python manage.py seed_data
 python manage.py runserver
 ```
 
-### Frontend
+**Frontend**
 
 ```cmd
 cd frontend
@@ -165,17 +147,20 @@ Open http://localhost:5173
 
 ---
 
-## Deploy to Render (required for submission)
+## Deploy to Render
 
-1. Push repo to GitHub; invite reviewers (see [SUBMISSION.md](SUBMISSION.md)).
+1. Push this repo to GitHub.
 2. Render → **New → Blueprint** → select `render.yaml`.
-3. When API is live, set on **static site** service:
-   - `VITE_API_URL` = `https://YOUR-API.onrender.com/api`
-4. On **API** service:
-   - `CORS_ALLOWED_ORIGINS` = `https://YOUR-WEB.onrender.com`
-   - `CSRF_TRUSTED_ORIGINS` = same URL
-5. Redeploy both. Test `https://YOUR-API.onrender.com/api/health/` → `{"status":"ok"}`.
-6. Paste live URLs into this README and your submission email.
+3. Once the API service is live, set environment variables on each service:
+
+| Service | Variable | Value |
+|---------|----------|-------|
+| Static site | `VITE_API_URL` | `https://YOUR-API.onrender.com/api` |
+| API | `CORS_ALLOWED_ORIGINS` | `https://YOUR-WEB.onrender.com` |
+| API | `CSRF_TRUSTED_ORIGINS` | `https://YOUR-WEB.onrender.com` |
+
+4. Redeploy both services.
+5. Verify: `https://YOUR-API.onrender.com/api/health/` → `{"status":"ok"}`.
 
 ---
 
@@ -195,12 +180,8 @@ Open http://localhost:5173
 | GET | `/api/activities/summary/` | Review totals |
 | GET | `/api/activities/` | List activities |
 | POST | `/api/activities/:id/approve/` | Approve |
+| POST | `/api/activities/:id/reject/` | Reject |
 | POST | `/api/activities/:id/lock/` | Lock for audit |
-
-## Clear test data
-
-- **UI:** Upload → **Clear demo data**
-- **CLI:** `python manage.py reset_demo_data`
 
 ---
 
