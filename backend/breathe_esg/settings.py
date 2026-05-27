@@ -44,8 +44,9 @@ MIDDLEWARE = [
 try:
     import whitenoise  # noqa: F401
 
-    MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
-except ImportError:
+    _cors_idx = MIDDLEWARE.index("corsheaders.middleware.CorsMiddleware")
+    MIDDLEWARE.insert(_cors_idx + 1, "whitenoise.middleware.WhiteNoiseMiddleware")
+except (ImportError, ValueError):
     pass
 
 ROOT_URLCONF = "breathe_esg.urls"
@@ -78,14 +79,25 @@ DATABASES = {
     }
 }
 
-_use_sqlite = os.getenv("USE_SQLITE", "").lower() == "true"
-if _use_sqlite:
+def _should_use_sqlite() -> bool:
+    explicit = os.getenv("USE_SQLITE", "").lower()
+    if explicit == "true":
+        return True
+    if explicit == "false":
+        return False
+    # Render free tier: default to SQLite when no managed Postgres URL is provided.
+    if os.getenv("RENDER") and not os.getenv("DATABASE_URL", "").strip():
+        return True
+    return False
+
+
+if _should_use_sqlite():
     DATABASES["default"] = {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
 else:
-    _database_url = os.getenv("DATABASE_URL")
+    _database_url = os.getenv("DATABASE_URL", "").strip()
     if _database_url:
         try:
             import dj_database_url
