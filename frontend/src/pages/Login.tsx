@@ -22,7 +22,7 @@ export default function Login() {
       await authApi.login(username, password);
       await qc.invalidateQueries({ queryKey: ["me"] });
       setShowSuccess(true);
-      window.setTimeout(() => navigate("/upload"), 650);
+      window.setTimeout(() => navigate("/upload"), 120);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Login failed";
       if (msg === "Failed to fetch") {
