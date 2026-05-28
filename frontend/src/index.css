@@ -60,8 +60,110 @@ body {
   }
 }
 
-.hero-soft-line path {
+.hero-soft-line-path {
   animation: hero-soft-line-move 28s linear infinite;
+}
+
+/* ── Smooth air wave ribbons ────────────────────────────────────────────── */
+@keyframes air-wave-1 {
+  0%   { transform: translateX(0px) translateY(0px); }
+  33%  { transform: translateX(40px) translateY(-12px); }
+  66%  { transform: translateX(-20px) translateY(8px); }
+  100% { transform: translateX(0px) translateY(0px); }
+}
+@keyframes air-wave-2 {
+  0%   { transform: translateX(0px) translateY(0px); }
+  40%  { transform: translateX(-50px) translateY(10px); }
+  70%  { transform: translateX(30px) translateY(-6px); }
+  100% { transform: translateX(0px) translateY(0px); }
+}
+@keyframes air-wave-3 {
+  0%   { transform: translateX(0px) translateY(0px); }
+  50%  { transform: translateX(60px) translateY(-8px); }
+  100% { transform: translateX(0px) translateY(0px); }
+}
+
+.hero-air-wave-1 {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: air-wave-1 22s ease-in-out infinite;
+  will-change: transform;
+}
+.hero-air-wave-2 {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: air-wave-2 30s ease-in-out infinite;
+  will-change: transform;
+}
+.hero-air-wave-3 {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: air-wave-3 38s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* ── Light ray beams ─────────────────────────────────────────────────────── */
+@keyframes light-rays-pulse {
+  0%, 100% { opacity: 0.10; transform: rotate(-15deg) scaleY(1); }
+  50%       { opacity: 0.18; transform: rotate(-15deg) scaleY(1.04); }
+}
+
+.hero-light-rays {
+  background: repeating-linear-gradient(
+    -15deg,
+    transparent 0px,
+    transparent 80px,
+    rgba(255,255,255,0.07) 80px,
+    rgba(255,255,255,0.07) 120px,
+    transparent 120px,
+    transparent 200px,
+    rgba(255,255,255,0.05) 200px,
+    rgba(255,255,255,0.05) 230px
+  );
+  animation: light-rays-pulse 18s ease-in-out infinite;
+  will-change: opacity, transform;
+}
+
+/* ── Mist wisps ──────────────────────────────────────────────────────────── */
+@keyframes mist-drift-1 {
+  0%   { transform: translateX(0) translateY(0) scaleX(1);   opacity: 0.18; }
+  40%  { transform: translateX(60px) translateY(-10px) scaleX(1.1); opacity: 0.28; }
+  100% { transform: translateX(0) translateY(0) scaleX(1);   opacity: 0.18; }
+}
+@keyframes mist-drift-2 {
+  0%   { transform: translateX(0) translateY(0) scaleX(1);   opacity: 0.12; }
+  50%  { transform: translateX(-80px) translateY(14px) scaleX(1.15); opacity: 0.22; }
+  100% { transform: translateX(0) translateY(0) scaleX(1);   opacity: 0.12; }
+}
+@keyframes mist-drift-3 {
+  0%   { transform: translateX(0) translateY(0);   opacity: 0.08; }
+  60%  { transform: translateX(40px) translateY(-6px); opacity: 0.16; }
+  100% { transform: translateX(0) translateY(0);   opacity: 0.08; }
+}
+
+.hero-mist-1 {
+  top: 35%; left: -8%;
+  width: 55%; height: 180px;
+  background: radial-gradient(ellipse at center, rgba(167,243,208,0.4) 0%, transparent 70%);
+  filter: blur(40px);
+  animation: mist-drift-1 26s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+.hero-mist-2 {
+  top: 55%; right: -5%;
+  width: 50%; height: 160px;
+  background: radial-gradient(ellipse at center, rgba(147,197,253,0.3) 0%, transparent 70%);
+  filter: blur(50px);
+  animation: mist-drift-2 34s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+.hero-mist-3 {
+  top: 15%; left: 30%;
+  width: 45%; height: 140px;
+  background: radial-gradient(ellipse at center, rgba(209,250,229,0.35) 0%, transparent 70%);
+  filter: blur(35px);
+  animation: mist-drift-3 44s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 
 /* Smooth falling leaves and droplets */
@@ -129,9 +231,16 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .hero-overlay-drift,
   .hero-particles,
-  .hero-soft-line path,
+  .hero-soft-line-path,
   .hero-falling-leaf,
-  .hero-falling-drop {
+  .hero-falling-drop,
+  .hero-air-wave-1,
+  .hero-air-wave-2,
+  .hero-air-wave-3,
+  .hero-light-rays,
+  .hero-mist-1,
+  .hero-mist-2,
+  .hero-mist-3 {
     animation: none;
     opacity: 0;
   }

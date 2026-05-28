@@ -70,10 +70,23 @@ export const authApi = {
     return data;
   },
   logout: async () => {
-    try {
-      await apiFetch("/auth/logout/", { method: "POST" });
-    } finally {
-      setAuthToken(null);
+    const token = getAuthToken();  // save before clearing
+    setAuthToken(null);            // remove from storage immediately
+    if (token) {
+      // Send the final logout request using the saved token directly,
+      // bypassing apiFetch so the already-cleared token is not read.
+      try {
+        await fetch(`${API_BASE}/auth/logout/`, {
+          method: "POST",
+          headers: {
+            Authorization: `Token ${token}`,
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        });
+      } catch {
+        // best-effort — local token already cleared
+      }
     }
   },
   me: () => apiFetch<{ username: string; id: number }>("/auth/me/"),

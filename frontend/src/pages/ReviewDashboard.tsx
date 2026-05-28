@@ -7,13 +7,28 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
+import {
+  AlertTriangle,
+  ArrowUpDown,
+  ChevronRight,
+  ClipboardList,
+  Filter,
+  Loader2,
+} from "lucide-react";
 import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { activitiesApi, Activity } from "../api/client";
 import SummaryBanner from "../components/SummaryBanner";
 import { severityBadge, severityRank } from "../lib/severity";
 
 const helper = createColumnHelper<Activity>();
+
+const statusConfig: Record<string, { label: string; classes: string }> = {
+  pending: { label: "Pending", classes: "bg-slate-100 text-slate-700" },
+  flagged: { label: "Flagged", classes: "bg-amber-100 text-amber-800" },
+  approved: { label: "Approved", classes: "bg-emerald-100 text-emerald-800" },
+  rejected: { label: "Rejected", classes: "bg-red-100 text-red-800" },
+};
 
 const statusPills = [
   { value: "", label: "All" },
@@ -23,7 +38,12 @@ const statusPills = [
   { value: "rejected", label: "Rejected" },
 ];
 
+function formatScope(raw: string) {
+  return raw.replace("scope_", "Scope ");
+}
+
 export default function ReviewDashboard() {
+  const navigate = useNavigate();
   const [source, setSource] = useState("");
   const [reviewStatus, setReviewStatus] = useState("");
   const [scope, setScope] = useState("");
@@ -55,24 +75,68 @@ export default function ReviewDashboard() {
 
   const columns = useMemo(
     () => [
-      helper.accessor("source_type", { header: "Source" }),
-      helper.accessor("activity_type", {
-        header: "Type",
-        cell: (c) => c.getValue().replace(/_/g, " "),
+      helper.accessor("source_type", {
+        header: "Source",
+        cell: (c) => (
+          <span className="font-medium capitalize text-slate-800">{c.getValue()}</span>
+        ),
       }),
-      helper.accessor("scope", { header: "Scope" }),
-      helper.accessor("amount_display", { header: "Amount" }),
+      helper.accessor("activity_type", {
+        header: "Activity",
+        cell: (c) => (
+          <span className="capitalize text-slate-700">
+            {c.getValue().replace(/_/g, " ")}
+          </span>
+        ),
+      }),
+      helper.accessor("scope", {
+        header: "Scope",
+        cell: (c) => (
+          <span className="rounded-md bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-800">
+            {formatScope(c.getValue())}
+          </span>
+        ),
+      }),
+      helper.accessor("activity_date", {
+        header: "Date",
+        cell: (c) => {
+          const v = c.getValue();
+          return v ? (
+            <span className="text-slate-600">{v}</span>
+          ) : (
+            <span className="text-slate-300">—</span>
+          );
+        },
+      }),
+      helper.accessor("amount_display", {
+        header: "Amount",
+        cell: (c) => (
+          <span className={c.getValue() ? "text-slate-700" : "text-slate-300"}>
+            {c.getValue() || "—"}
+          </span>
+        ),
+      }),
       helper.accessor("estimated_emissions_kgco2e", {
-        header: "kgCO2e",
-        cell: (c) => (c.getValue() != null ? c.getValue()!.toFixed(1) : "—"),
+        header: "kgCO₂e",
+        cell: (c) => {
+          const v = c.getValue();
+          return v != null ? (
+            <span className="font-mono text-slate-700">{v.toFixed(1)}</span>
+          ) : (
+            <span className="text-slate-300">—</span>
+          );
+        },
       }),
       helper.accessor("review_status", {
         header: "Status",
-        cell: (c) => (
-          <span className="rounded-full bg-slate-200 px-2 py-0.5 text-xs capitalize">
-            {c.getValue()}
-          </span>
-        ),
+        cell: (c) => {
+          const cfg = statusConfig[c.getValue()] ?? { label: c.getValue(), classes: "bg-slate-100 text-slate-700" };
+          return (
+            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${cfg.classes}`}>
+              {cfg.label}
+            </span>
+          );
+        },
       }),
       helper.accessor("highest_severity", {
         header: "Severity",
@@ -83,22 +147,30 @@ export default function ReviewDashboard() {
         },
         cell: (c) => {
           const v = c.getValue();
-          if (!v) return "—";
+          if (!v) return <span className="text-slate-300">—</span>;
           return (
-            <span className={`rounded px-2 py-0.5 text-xs capitalize ${severityBadge[v]}`}>
+            <span className={`inline-flex items-center rounded px-2 py-0.5 text-xs font-medium capitalize ${severityBadge[v]}`}>
               {v}
             </span>
           );
         },
       }),
-      helper.accessor("issue_count", { header: "Issues" }),
+      helper.accessor("issue_count", {
+        header: "Issues",
+        cell: (c) => {
+          const v = c.getValue() ?? 0;
+          return v > 0 ? (
+            <span className="font-medium text-amber-700">{v}</span>
+          ) : (
+            <span className="text-slate-300">0</span>
+          );
+        },
+      }),
       helper.display({
         id: "actions",
         header: "",
-        cell: ({ row }) => (
-          <Link className="text-xs font-medium text-brand-600 hover:underline" to={`/activities/${row.original.id}`}>
-            Review
-          </Link>
+        cell: () => (
+          <ChevronRight className="ml-auto h-4 w-4 text-slate-300 transition group-hover:text-brand-600" />
         ),
       }),
     ],
@@ -116,20 +188,36 @@ export default function ReviewDashboard() {
 
   return (
     <div>
-      <h1 className="font-serif text-2xl text-brand-950">Review dashboard</h1>
+      {/* Page header */}
+      <div className="mb-4 flex items-center gap-3">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-950 text-white">
+          <ClipboardList className="h-5 w-5" />
+        </div>
+        <div>
+          <h1 className="font-serif text-2xl font-semibold text-brand-950">Review dashboard</h1>
+          <p className="text-sm text-slate-500">
+            Inspect, approve, and lock activities before they go to auditors.
+          </p>
+        </div>
+      </div>
+
       <SummaryBanner summary={summaryQuery.data} loading={summaryQuery.isLoading} />
 
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs font-medium text-slate-600">Status:</span>
+      {/* Filter bar */}
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs text-slate-500">
+          <Filter className="h-3.5 w-3.5" />
+          <span className="font-medium">Status:</span>
+        </div>
         {statusPills.map((p) => (
           <button
             key={p.value}
             type="button"
             onClick={() => setReviewStatus(p.value)}
-            className={`rounded-full px-3 py-1 text-xs font-medium transition ${
+            className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
               reviewStatus === p.value
-                ? "bg-brand-950 text-white"
-                : "bg-white border border-slate-200 text-slate-700 hover:border-brand-300"
+                ? "bg-brand-950 text-white shadow-sm"
+                : "bg-white border border-slate-200 text-slate-600 hover:border-brand-300 hover:text-brand-800"
             }`}
           >
             {p.label}
@@ -138,70 +226,133 @@ export default function ReviewDashboard() {
         <button
           type="button"
           onClick={() => setIssuesOnly(!issuesOnly)}
-          className={`ml-2 rounded-full px-3 py-1 text-xs font-medium ${
-            issuesOnly ? "bg-amber-600 text-white" : "border border-amber-300 text-amber-800"
+          className={`ml-1 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition ${
+            issuesOnly
+              ? "bg-amber-600 text-white shadow-sm"
+              : "border border-amber-300 text-amber-700 hover:bg-amber-50"
           }`}
         >
+          <AlertTriangle className="h-3 w-3" />
           Issues only
         </button>
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-2">
-        <select className="rounded-lg border px-2 py-1.5 text-xs" value={source} onChange={(e) => setSource(e.target.value)}>
-          <option value="">All sources</option>
-          <option value="sap">SAP</option>
-          <option value="utility">Utility</option>
-          <option value="travel">Travel</option>
-        </select>
-        <select className="rounded-lg border px-2 py-1.5 text-xs" value={scope} onChange={(e) => setScope(e.target.value)}>
-          <option value="">All scopes</option>
-          <option value="scope_1">Scope 1</option>
-          <option value="scope_2">Scope 2</option>
-          <option value="scope_3">Scope 3</option>
-        </select>
-        <select className="rounded-lg border px-2 py-1.5 text-xs" value={severity} onChange={(e) => setSeverity(e.target.value)}>
-          <option value="">All severities</option>
-          <option value="high">High</option>
-          <option value="medium">Medium</option>
-          <option value="low">Low</option>
-        </select>
+      {/* Secondary filters */}
+      <div className="mb-4 flex flex-wrap gap-2">
+        {[
+          {
+            value: source,
+            setter: setSource,
+            options: [
+              { value: "", label: "All sources" },
+              { value: "sap", label: "SAP" },
+              { value: "utility", label: "Utility" },
+              { value: "travel", label: "Travel" },
+            ],
+          },
+          {
+            value: scope,
+            setter: setScope,
+            options: [
+              { value: "", label: "All scopes" },
+              { value: "scope_1", label: "Scope 1" },
+              { value: "scope_2", label: "Scope 2" },
+              { value: "scope_3", label: "Scope 3" },
+            ],
+          },
+          {
+            value: severity,
+            setter: setSeverity,
+            options: [
+              { value: "", label: "All severities" },
+              { value: "high", label: "High severity" },
+              { value: "medium", label: "Medium severity" },
+              { value: "low", label: "Low severity" },
+            ],
+          },
+        ].map((sel, i) => (
+          <select
+            key={i}
+            className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 shadow-sm transition focus:border-brand-400 focus:outline-none focus:ring-1 focus:ring-brand-400"
+            value={sel.value}
+            onChange={(e) => sel.setter(e.target.value)}
+          >
+            {sel.options.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+        ))}
       </div>
 
-      <div className="mt-4 overflow-x-auto rounded-xl border bg-white shadow-sm">
+      {/* Table */}
+      <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
         {isLoading ? (
-          <p className="p-4 text-xs text-slate-500">Loading activities…</p>
+          <div className="flex items-center gap-2 px-4 py-10 text-sm text-slate-400">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Loading activities…
+          </div>
         ) : (
           <table className="w-full text-left text-xs">
-            <thead className="border-b bg-slate-50">
+            <thead className="border-b border-slate-100">
               {table.getHeaderGroups().map((hg) => (
                 <tr key={hg.id}>
                   {hg.headers.map((h) => (
                     <th
                       key={h.id}
-                      className="cursor-pointer px-3 py-2 font-medium text-slate-600 select-none"
+                      className="cursor-pointer select-none px-3 py-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400 transition hover:text-slate-700"
                       onClick={h.column.getToggleSortingHandler()}
                     >
-                      {flexRender(h.column.columnDef.header, h.getContext())}
-                      {{ asc: " ↑", desc: " ↓" }[h.column.getIsSorted() as string] ?? ""}
+                      <span className="inline-flex items-center gap-1">
+                        {flexRender(h.column.columnDef.header, h.getContext())}
+                        {h.column.getCanSort() && (
+                          <ArrowUpDown className="h-3 w-3 opacity-40" />
+                        )}
+                        {{ asc: " ↑", desc: " ↓" }[h.column.getIsSorted() as string] ?? ""}
+                      </span>
                     </th>
                   ))}
                 </tr>
               ))}
             </thead>
             <tbody>
-              {table.getRowModel().rows.map((row) => (
-                <tr key={row.id} className="border-b border-slate-100 hover:bg-blue-50/40">
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-3 py-2">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
+              {table.getRowModel().rows.length === 0 ? (
+                <tr>
+                  <td colSpan={10} className="py-16 text-center">
+                    <div className="flex flex-col items-center gap-2 text-slate-400">
+                      <ClipboardList className="h-8 w-8 text-slate-200" />
+                      <p className="text-sm">No activities match your filters.</p>
+                      <p className="text-xs">Upload a sample file on the Upload page to get started.</p>
+                    </div>
+                  </td>
                 </tr>
-              ))}
+              ) : (
+                table.getRowModel().rows.map((row) => (
+                  <tr
+                    key={row.id}
+                    className="group cursor-pointer border-b border-slate-50 transition hover:bg-slate-50"
+                    onClick={() => navigate(`/activities/${row.original.id}`)}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className="px-3 py-2.5">
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         )}
       </div>
+
+      {/* Row count */}
+      {!isLoading && rows.length > 0 && (
+        <p className="mt-2 text-right text-xs text-slate-400">
+          {rows.length} {rows.length === 1 ? "activity" : "activities"}
+        </p>
+      )}
     </div>
   );
 }

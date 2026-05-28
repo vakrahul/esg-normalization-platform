@@ -4,19 +4,106 @@ This document describes the Breathe ESG database schema, relationships, and immu
 
 ## Entity relationship overview
 
+```mermaid
+erDiagram
+    Organization ||--o{ DataSource : "has"
+    DataSource ||--o{ ImportBatch : "produces"
+    ImportBatch ||--o{ RawRecord : "contains"
+    RawRecord ||--|| NormalizedActivity : "normalizes to"
+    NormalizedActivity ||--o{ ValidationIssue : "has"
+    NormalizedActivity ||--o{ AuditLog : "logged in"
+    User ||--o{ AuditLog : "performs"
+
+    Organization {
+        int id PK
+        string name
+        datetime created_at
+    }
+    DataSource {
+        int id PK
+        int organization FK
+        string source_type "sap | utility | travel"
+        string ingestion_method "csv | api"
+        datetime created_at
+    }
+    ImportBatch {
+        int id PK
+        int datasource FK
+        string original_filename
+        string status "processing | completed | failed"
+        int row_count
+        int success_count
+        int flagged_count
+        int failed_count
+        datetime imported_at
+    }
+    RawRecord {
+        int id PK
+        int import_batch FK
+        int row_number
+        json raw_payload "immutable after insert"
+        string processing_status "pending | processed | failed"
+        text processing_error
+        datetime created_at
+    }
+    NormalizedActivity {
+        int id PK
+        int organization FK
+        int raw_record FK "OneToOne"
+        string source_type
+        string activity_type "fuel | electricity | procurement | flight | hotel | ground_transport"
+        string scope "scope_1 | scope_2 | scope_3"
+        date activity_date
+        float quantity
+        string unit
+        string normalized_unit
+        float spend_amount
+        string currency
+        string facility
+        string vendor
+        json metadata "source-specific fields"
+        float estimated_emissions_kgco2e "placeholder — not audit-grade"
+        string source_reference_id "doc number | account | trip id"
+        string review_status "pending | flagged | approved | rejected"
+        text review_comment
+        bool locked_for_audit
+        datetime approved_at
+        datetime locked_at
+        datetime created_at
+        datetime updated_at
+    }
+    ValidationIssue {
+        int id PK
+        int activity FK
+        string severity "low | medium | high"
+        string issue_type
+        text message
+        bool resolved
+        datetime created_at
+    }
+    AuditLog {
+        int id PK
+        int activity FK
+        string action "created | normalized | edited | approved | rejected | locked"
+        json old_value
+        json new_value
+        int changed_by FK "User"
+        datetime changed_at
+    }
+```
+
+**Lineage chain:** `AuditLog` → `NormalizedActivity` → `RawRecord` → `ImportBatch` → `DataSource` → `Organization`. Every approved or locked row traces back to the exact source file row.
+
+**Hierarchy (simplified):**
+
 ```
 Organization
-    |
-    +-- DataSource (sap | utility | travel)
-            |
-            +-- ImportBatch
-                    |
-                    +-- RawRecord (immutable payload)
-                            |
-                            +-- NormalizedActivity (1:1)
-                                    |
-                                    +-- ValidationIssue (many)
-                                    +-- AuditLog (many)
+    └── DataSource (sap | utility | travel)
+            └── ImportBatch
+                    └── RawRecord  ← immutable raw payload
+                            └── NormalizedActivity  ← 1:1
+                                    ├── ValidationIssue (many)
+                                    └── AuditLog (many)
 ```
 
 ## Core app

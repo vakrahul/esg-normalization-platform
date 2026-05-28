@@ -1,19 +1,18 @@
-# Breathe ESG
+#  ESG
 
 Prototype for ingesting multi-source sustainability data (SAP, utility, travel), normalising to a canonical ESG activity model, validating data quality issues, and supporting analyst review before records are locked for audit.
 
-Built for the **Breathe ESG tech intern assignment**. The hard problem modelled here is **messy enterprise ingestion and analyst sign-off**, not carbon methodology.
+
 
 ---
 
 ## Live demo
-
-**After you deploy**, paste your URLs here:
+URLs here:https://drive.google.com/file/d/1LQKC54YwjSxFCP6ZXoCkzCv_PRKUQSYg/view?usp=sharing
 
 | Service | URL |
 |---------|-----|
-| Frontend | `https://YOUR-WEB.onrender.com` |
-| API health | `https://YOUR-API.onrender.com/api/health/` |
+| Frontend | `https://esg-normalization-platform-1.onrender.com/` |
+| API health | `https://esg-normalization-platform.onrender.com/api/health/` |
 
 **Login:** `analyst` / `analyst123`
 
@@ -107,7 +106,7 @@ Upload your own CSV/JSON if column headers match the samples.
 | sap_budget_export.csv | utility_billing.csv | Sync: default / domestic / international |
 | sap_procurement_q2.csv | utility_campus_north.csv | travel_domestic_trips.json |
 | sap_fuel_india.csv | utility_campus_south.csv | travel_international_trips.json |
-| sap_export_de_variant.csv (German headers) | | |
+
 
 ---
 
@@ -146,40 +145,6 @@ npm run dev
 Open http://localhost:5173
 
 ---
-
-## Deploy to Render
-
-### 1. Backend (Web Service, root `backend`)
-
-| Variable | Example value |
-|----------|----------------|
-| `USE_SQLITE` | `true` |
-| `DJANGO_DEBUG` | `false` |
-| `DJANGO_SECRET_KEY` | (generate) |
-| `DJANGO_ALLOWED_HOSTS` | `.onrender.com` |
-| `COOKIE_DOMAIN` | `.onrender.com` |
-| `CORS_ALLOWED_ORIGINS` | `https://YOUR-FRONTEND.onrender.com` (no trailing `/`) |
-| `CSRF_TRUSTED_ORIGINS` | `https://YOUR-FRONTEND.onrender.com` (no trailing `/`) |
-
-Test: `https://YOUR-API.onrender.com/api/health/` → `{"status":"ok"}`
-
-### 2. Frontend (Static Site, root `frontend`)
-
-| Variable | Example value |
-|----------|----------------|
-| `VITE_API_URL` | `https://YOUR-API.onrender.com/api` |
-
-**Important:** Vite bakes `VITE_API_URL` at **build time**. After changing it, use **Manual Deploy → Clear build cache & deploy** on the static site.
-
-### Your URLs (example)
-
-| | URL |
-|---|-----|
-| API | `https://esg-normalization-platform.onrender.com/api` |
-| Frontend | `https://esg-normalization-platform-1.onrender.com` |
-
-If login shows **Failed to fetch**, the static site was built without `VITE_API_URL` or the API is down — fix env vars and redeploy the frontend.
-
 ---
 
 ## API endpoints
