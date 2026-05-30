@@ -1,6 +1,20 @@
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import EnvHeroBackdrop from "../components/EnvHeroBackdrop";
 import PillButton from "../components/PillButton";
+
+const API_BASE = import.meta.env.VITE_API_URL || "/api";
+
+/** Fire-and-forget ping to wake the Render backend from cold-start.
+ *  Runs once when the landing page mounts — user sees the page render,
+ *  backend wakes up in the background, sign-in feels instant. */
+function usePrimeBackend() {
+  useEffect(() => {
+    fetch(`${API_BASE}/health/`, { method: "GET", credentials: "include" }).catch(
+      () => {} // swallow — purely best-effort
+    );
+  }, []);
+}
 
 /** Break out of AppShell max-width so hero image is full viewport width. */
 const FULL_BLEED = "relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-screen max-w-[100vw]";
@@ -72,6 +86,7 @@ function StepArrow() {
 }
 
 export default function Landing() {
+  usePrimeBackend(); // silently wakes the backend the moment this page loads
   return (
     <div className={`${FULL_BLEED} overflow-x-hidden`}>
       {/* Full-screen cover: image fills viewport; text sits on top */}
